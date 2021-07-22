@@ -1,0 +1,151 @@
+@import '~normalize.css';
+
+// FONTS
+@import './fonts.scss';
+// SCSS содержит много модулей и функций https://sass-lang.com/documentation/modules чекать тут все что надо!!!
+// VARIABLES
+$main-color: tomato;
+$blColor: aquamarine;
+$blHeigt: 200px;
+$blWidth: 300px;
+$blMarginBot: 20px;
+$blborder: 4px solid green;
+$mainFont: 30px;
+$someVar: some_class;
+// MIXIN (шаблон со свойствами)
+// так же можно устанавливать значения по умолчанию, которые потом можно перебивать! 
+@mixin font ($color: red, $fontW: 600){
+  font-size: $mainFont;
+  font-weight: $fontW;
+  font-family: 'Roboto';
+  color: $color;
+}
+// mixin с бесконечными перемеными
+@mixin padd($padd...){
+  padding: $padd;
+}
+// mixin может включать в себя псевдоэлементы + 
+// так же можно писать классы и элементы к которым может обращаться mixit тогда он просто вызываеться @include
+// для внесения дополнительных свойств и стилей в mixid можно добавить оператор @content
+@mixin link($link, $hover, $active, $visited){
+  color: $link;
+  &:hover{
+    color: $hover;
+  }
+  &:active{
+    color: $active;
+  }
+  @content;
+}
+// test математических функций (Посмотреть FLEX!!!)
+@mixin grid($cols, $margin){
+  // пример одной из функций SCSS 
+  background-color: darken( green, 10%);
+  margin-bottom: $margin;
+  height: 150px;
+  // Нельзя использовать разные единицы измерения если % то все в процентах. 
+  // (100% - 80px) - РАБОТАТЬ НЕ БУДЕТ!!! 
+  // Пример с условным оператором!!!
+  // Можно проверять на >, <, <=, >=, !=, ==
+  @if($cols >= 5 ){
+    width: 100%;
+    margin-right: 0;
+  }
+  @else{
+    width: ((100% - (($cols - 1)*$margin)) / $cols);
+    margin-right: $margin;
+  }
+  // получаем последний элемент в ряду и убираем у него margin  
+  &:nth-child(#{$cols}n){
+    margin-right: 0;
+  }
+}
+// Циклы есть множество но в основном используеться for и то редко до этого доходит
+@for $i from 24 to 29{
+  .#{$someVar}-#{i}{
+    width: 50px + $i;
+    height: 50px + $i; 
+  }
+}
+// INITIAL
+.container {
+  margin: 0 auto;
+  width: 100%;
+}
+#babylon{
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  z-index: 100;
+  left: 0px;
+}
+*{
+  padding: 0;
+  margin: 0;
+}
+.block:not(.first){
+  background-color: $blColor;
+  height: $blHeigt;
+  width: $blWidth;
+  margin-bottom: $blMarginBot;
+  border: $blborder;
+}
+.first{
+  background-color: yellow;
+  height: 100px;
+  width: $blWidth;
+  margin-bottom: $blMarginBot;
+  border: $blborder;
+}
+#block-center{
+  padding: 30px;
+  // передаем в mixin несколько параметров
+  @include padd(30px 60px 30px 60px);
+  // поддерживает многомерную вложеность!!! желателдьно не использовать больше 2-3 вложений!!! 
+  ul{
+    list-style: none;
+    // указываем что элементы именно внутри ul
+    li{
+      float: left;
+      margin-right: 10px;
+      // Подключаем шаблон со свойствами, и можем передавать в него парамментры
+      @include font(#333, bold);
+    }
+    a{
+      margin-right: 10px;
+      // можно передавать параметры не по очередно, но тогда указывая где какой!! 
+      @include font($fontW: light, $color: green);
+      // &  - говорит что мы добавляем к этому классу дополнительный псевдоэлемент
+      &:hover{
+        color:blue;
+      }
+    }
+  }
+  // элементы внутри Block
+  // li{
+  //   float: left;
+  //   margin-right: 10px;
+  // }
+}
+.link{
+  // оператор @content позволяет вносить дополнительные изменения которые нужны 
+  @include link(red, green, blue, gray){
+    background-color: aqua;
+    &:visited{
+      color: darkgoldenrod;
+    }
+  };
+}
+#grid{
+  float: left;
+  width: 100%;
+  // берем только дочерние элементы блока grid
+  >div{
+    float: left;
+    @include grid(4, 2%);
+  }
+}
+// FILES
+
+@import 'components/main';
+@import 'components/logo';
